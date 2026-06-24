@@ -35,6 +35,7 @@ Agenda_citas/
 └── README.md
 ```
 
+
 ## Levantar el proyecto localmente con Docker
 
 ```bash
@@ -71,6 +72,7 @@ Acceder en: [http://localhost:8080](http://localhost:8080)
 ## Correcciones aplicadas al proyecto
 
 Durante la revisión se detectaron y corrigieron los siguientes problemas:
+
 
 | Problema | Archivo(s) | Corrección |
 |---|---|---|
