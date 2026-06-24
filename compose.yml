@@ -1,0 +1,29 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:80"
+    environment:
+      - DB_HOST=db
+      - DB_NAME=agenda_citas
+      - DB_USER=root
+      - DB_PASSWORD=Agenda123*
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: Agenda123*
+      MYSQL_DATABASE: agenda_citas
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./database.sql:/docker-entrypoint-initdb.d/database.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+

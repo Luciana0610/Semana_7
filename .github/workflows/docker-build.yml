@@ -1,0 +1,48 @@
+name: Build Docker Image - Agenda de Citas
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Construir imagen Docker
+        run: docker build -t agenda-citas:latest .
+
+      - name: Ver imagenes disponibles
+        run: docker images
+
+      - name: Verificar que la imagen fue creada
+        run: |
+          docker images | grep "agenda-citas" && echo "Imagen construida exitosamente" || (echo "ERROR: imagen no encontrada" && exit 1)
+
+      - name: Levantar app y base de datos con docker compose
+        run: docker compose up -d
+
+      - name: Esperar a que la base de datos esté healthy
+        run: |
+          for i in $(seq 1 15); do
+            estado=$(docker inspect --format='{{.State.Health.Status}}' $(docker compose ps -q db))
+            if [ "$estado" = "healthy" ]; then
+              echo "Base de datos healthy"
+              break
+            fi
+            echo "Esperando base de datos... intento $i"
+            sleep 5
+          done
+
+      - name: Verificar que la app responde y conecta a la base de datos
+        run: |
+          sleep 5
+          respuesta=$(curl -s http://localhost:8080/index.php)
+          echo "$respuesta" | grep -qi "Error de conexión" && (echo "ERROR: la app no pudo conectarse a la base de datos" && exit 1)
+          curl -sf http://localhost:8080/index.php > /dev/null && echo "La app responde correctamente" || (echo "ERROR: la app no respondió" && exit 1)
+
+      - name: Apagar contenedores
+        if: always()
+        run: docker compose down

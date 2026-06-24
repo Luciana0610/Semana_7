@@ -1,0 +1,55 @@
+name: Pipeline DevOps - Agenda de Citas
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  validar-proyecto:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Verificar estructura del proyecto
+        run: |
+          test -f README.md    && echo "OK: README.md"    || (echo "ERROR: falta README.md" && exit 1)
+          test -f Dockerfile   && echo "OK: Dockerfile"   || (echo "ERROR: falta Dockerfile" && exit 1)
+          test -f compose.yml  && echo "OK: compose.yml"  || (echo "ERROR: falta compose.yml" && exit 1)
+          test -d app          && echo "OK: app/"         || (echo "ERROR: falta app/" && exit 1)
+          test -f index.php    && echo "OK: index.php"    || (echo "ERROR: falta index.php" && exit 1)
+
+      - name: Confirmar CI
+        run: echo "La validacion CI fue exitosa para Agenda de Citas"
+
+  entrega-simulada:
+    needs: validar-proyecto
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Generar reporte de entrega
+        run: |
+          echo "======================================"         > reporte.txt
+          echo "  REPORTE DE ENTREGA SIMULADA - CD  "         >> reporte.txt
+          echo "======================================"         >> reporte.txt
+          echo "Proyecto: Agenda de Citas"                    >> reporte.txt
+          echo "Rama: ${{ github.ref_name }}"                 >> reporte.txt
+          echo "Autor: ${{ github.actor }}"                   >> reporte.txt
+          echo "Fecha: $(date)"                               >> reporte.txt
+          echo "Commit: ${{ github.sha }}"                    >> reporte.txt
+          echo "--------------------------------------"        >> reporte.txt
+          echo "Archivos incluidos en la entrega:"            >> reporte.txt
+          ls -1                                               >> reporte.txt
+          echo "--------------------------------------"        >> reporte.txt
+          echo "Estado: Entrega simulada preparada con exito" >> reporte.txt
+
+      - name: Subir reporte
+        uses: actions/upload-artifact@v4
+        with:
+          name: reporte-entrega
+          path: reporte.txt

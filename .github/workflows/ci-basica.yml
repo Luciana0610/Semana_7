@@ -1,0 +1,23 @@
+name: CI Basica - Agenda de Citas
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  saludo:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Mostrar mensaje inicial
+        run: echo "Primer workflow ejecutado para el proyecto Agenda de Citas"
+
+      - name: Mostrar informacion del runner
+        run: |
+          echo "Sistema operativo: $(uname -a)"
+          echo "Rama actual: ${{ github.ref_name }}"
+          echo "Autor del push: ${{ github.actor }}"

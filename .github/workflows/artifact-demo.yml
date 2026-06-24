@@ -1,0 +1,27 @@
+name: Artefacto de prueba - Agenda de Citas
+
+on:
+  workflow_dispatch:
+
+jobs:
+  generar-artefacto:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Crear archivo de evidencia
+        run: |
+          echo "Evidencia del workflow - Proyecto Agenda de Citas" > evidencia.txt
+          echo "Fecha: $(date)"                                    >> evidencia.txt
+          echo "Rama: ${{ github.ref_name }}"                     >> evidencia.txt
+          echo "Ejecutado por: ${{ github.actor }}"               >> evidencia.txt
+          echo "Archivos en el proyecto:"                         >> evidencia.txt
+          ls -la                                                   >> evidencia.txt
+
+      - name: Subir artefacto
+        uses: actions/upload-artifact@v4
+        with:
+          name: evidencia-workflow
+          path: evidencia.txt

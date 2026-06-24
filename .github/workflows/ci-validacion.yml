@@ -1,0 +1,30 @@
+name: Validacion inicial - Agenda de Citas
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar repositorio
+        uses: actions/checkout@v4
+
+      - name: Listar archivos del proyecto
+        run: ls -la
+
+      - name: Verificar que existan archivos clave
+        run: |
+          test -f README.md       && echo "OK: README.md existe"         || (echo "ERROR: falta README.md" && exit 1)
+          test -f Dockerfile      && echo "OK: Dockerfile existe"        || (echo "ERROR: falta Dockerfile" && exit 1)
+          test -f compose.yml     && echo "OK: compose.yml existe"       || (echo "ERROR: falta compose.yml" && exit 1)
+          test -d app             && echo "OK: carpeta app/ existe"      || (echo "ERROR: falta carpeta app/" && exit 1)
+          test -f index.php       && echo "OK: index.php existe"         || (echo "ERROR: falta index.php" && exit 1)
+          test -f conexion.php    && echo "OK: conexion.php existe"      || (echo "ERROR: falta conexion.php" && exit 1)
+
+      - name: Confirmar validacion
+        run: echo "Validacion basica del proyecto Agenda de Citas ejecutada correctamente"
